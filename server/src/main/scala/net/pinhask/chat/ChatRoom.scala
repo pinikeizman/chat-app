@@ -33,6 +33,7 @@ object ChatRoom {
           val ses = context.spawn(
             session(context.self, screenName, client),
             name = URLEncoder.encode(screenName, StandardCharsets.UTF_8.name))
+          println(s"creating session for ${screenName} ${client}")
           client ! SessionGranted(ses)
           chatRoom(ses :: sessions)
         case PublishSessionMessage(screenName, message) =>

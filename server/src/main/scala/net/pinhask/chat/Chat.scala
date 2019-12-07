@@ -1,18 +1,23 @@
 package net.pinhask.chat
 
+import akka.Done
 import akka.actor.typed.scaladsl.Behaviors
-import akka.actor.typed.{ActorSystem, Behavior}
+import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
+import net.pinhask.chat.ChatRoom.{GetSession, SessionEvent}
+
 import scala.io.StdIn
 
 object Chat {
   sealed trait ChatCommand
-  final case class CreateUserSession(name: String) extends ChatCommand
+  final case class CreateUserSession(roomName: String, replayTo: ActorRef[SessionEvent]) extends ChatCommand
 
   def apply(): Behavior[ChatCommand] =
     Behaviors.setup { ctx =>
       val chatRoom = ctx.spawn(ChatRoom(), "chatRoom")
       Behaviors.receiveMessage {
-        case CreateUserSession(name) =>
+        case CreateUserSession(clientName, replyTo) =>
+          println(s"session request get for client ${clientName}")
+          chatRoom ! GetSession(clientName, replyTo)
           Behaviors.same
       }
 
@@ -21,11 +26,10 @@ object Chat {
   def main(args: Array[String]) {
     val chatActor: Behavior[ChatCommand] = Chat()
     implicit val chatSystem: ActorSystem[ChatCommand] = ActorSystem(chatActor, "chat-app")
-    val wsHandler = WSServer()
+    val wsHandler: ActorSystem[Done] = WSServer(chatSystem)
 
-//    import system.dispatcher // for the future transformations
-//    bindingFuture
-//      .flatMap(_.unbind()) // trigger unbinding from the port
-//      .onComplete(_ => system.terminate()) // and shutdown when done
+    StdIn.readLine()
+    chatSystem.terminate()
+    wsHandler.terminate()
   }
 }
