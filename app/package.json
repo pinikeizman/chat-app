@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "webpack-dev-server --hot",
     "bundle-dev": "webpack --mode development",
+    "bundle": "webpack --mode production",
     "test": "npm run test"
   },
   "repository": {
@@ -26,6 +27,7 @@
   },
   "homepage": "https://github.com/pinikeizman/chat-app#readme",
   "dependencies": {
+    "@types/classnames": "^2.2.9",
     "classnames": "^2.2.6",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
@@ -36,6 +38,7 @@
     "@babel/preset-react": "^7.7.4",
     "@types/react": "^16.9.15",
     "@types/react-dom": "^16.9.4",
+    "@typescript-eslint/parser": "^2.10.0",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.2.1",
@@ -54,6 +57,7 @@
     "style-loader": "^1.0.1",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.3",
+    "typescript-eslint-parser": "^22.0.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0"

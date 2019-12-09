@@ -1,15 +1,18 @@
-import React, {useState} from 'react';
+import * as React from 'react';
 import './index.sass'
 import Login from "./Login";
+import {User} from "../types";
+import Chat from "./Chat";
 
 function ChatApp() {
-    // Declare a new state variable, which we'll call "count"
-    const [count, setCount] = useState(0);
+    const [user, setUser] = React.useState<User>(null);
 
     return (
         <div className='app-container'>
             <h1>Aweosome chat app!</h1>
-            <Login/>
+            {
+                user ? <Chat user={user}/> : <Login onLogin={(user)=>setUser(user)}/>
+            }
         </div>
     );
 }
