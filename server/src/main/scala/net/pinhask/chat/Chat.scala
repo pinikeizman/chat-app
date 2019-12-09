@@ -16,7 +16,7 @@ object Chat {
       val chatRoom = ctx.spawn(ChatRoom(), "chatRoom")
       Behaviors.receiveMessage {
         case CreateUserSession(clientName, replyTo) =>
-          println(s"session request get for client ${clientName}")
+          ctx.log.info(s"session request get for client ${clientName}")
           chatRoom ! GetSession(clientName, replyTo)
           Behaviors.same
       }
