@@ -1,20 +1,23 @@
 @import "../index"
 
 @mixin common-style
-  height: $common-size
+  height: $common-height-size
   font-weight: bold
   border-radius: $common-border-radius
   border: none
   outline: none
   cursor: pointer
+  font-size: $common-font-size
 @mixin interaction
   &:hover
     opacity: 0.75
     &:active
       opacity: 0.9
 .app-btn
+  @include interaction
   &__submit
     @include common-style
-    @include interaction
+    color: white
+    text-shadow: black 0px 0px 1px
     background: #01a2ff
 

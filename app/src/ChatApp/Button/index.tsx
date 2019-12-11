@@ -1,18 +1,26 @@
 import * as React from 'react';
+import * as cn from 'classnames';
 import './index.sass'
 
 export interface ButtonProps {
     label: string;
-    type: string;
+    color: string;
     onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    className?: string;
 }
 
 function Button(props: ButtonProps) {
-    const {type, label, onClick} = props;
+    const {color, label, onClick, className, ...otherProps} = props;
+    const btnClassName = cn('app-btn', {
+            [`app-btn__${color}`]: color
+        },
+        className
+    );
     return (
         <button
+            {...otherProps}
             onClick={onClick}
-            className={`app-btn${type && '__' + type}`}
+            className={btnClassName}
         >
             {label}
         </button>

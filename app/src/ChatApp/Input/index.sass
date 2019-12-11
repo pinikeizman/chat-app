@@ -1,4 +1,4 @@
-@import "../index"
+@import '../_cmn'
 $input-bottom-margin: 8px
 $input-border-size: 1px
 
@@ -14,6 +14,9 @@ $input-border-size: 1px
     padding: 0px 10px
     border-radius: $common-border-radius
     border: $input-border-size solid #ddd
-    height: $common-size
+    height: $common-height-size
+    font-size: $common-font-size
+    &.error
+      border-color: red
   &__label
     margin-bottom: $input-bottom-margin

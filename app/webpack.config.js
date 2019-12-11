@@ -21,11 +21,6 @@ module.exports = {
                     use: ['css-loader', 'sass-loader']
                 })
             },
-            // {
-            //     test: /\.(js|jsx)$/,
-            //     exclude: /node_modules/,
-            //     use: ["babel-loader", "eslint-loader"]
-            // }
             {
                 test: /\.ts(x?)$/,
                 exclude: /node_modules/,

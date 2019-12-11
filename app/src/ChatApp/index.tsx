@@ -1,8 +1,8 @@
 import * as React from 'react';
-import './index.sass'
 import Login from "./Login";
 import {User} from "../types";
 import Chat from "./Chat";
+import './index.sass'
 
 function ChatApp() {
     const [user, setUser] = React.useState<User>(null);
