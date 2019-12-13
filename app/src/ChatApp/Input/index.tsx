@@ -4,6 +4,7 @@ import './index.sass';
 
 export interface InputProps {
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onKeyPress?: (event: React.KeyboardEvent) => void;
     placeholder?: string;
     label?: string;
     value?: string;
@@ -13,7 +14,7 @@ export interface InputProps {
 }
 
 function Input(props: InputProps) {
-    const {className, label, value, onChange, error, style, ...otherProps} = props;
+    const {className, label, error, style, ...otherProps} = props;
     const containerClassName = cn('app-input', className);
     const inputClassName = cn('app-input__input', {error}, className);
     return (
@@ -21,8 +22,6 @@ function Input(props: InputProps) {
             {label ? <label className='app-input__label'>{label}</label> : null}
             <input
                 {...otherProps}
-                onChange={onChange}
-                value={value}
                 className={inputClassName}
             />
         </div>

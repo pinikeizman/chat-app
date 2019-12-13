@@ -24,6 +24,10 @@ object Chat {
   }
 
   def main(args: Array[String]) {
+    import com.typesafe.config.ConfigFactory
+
+    val conf = ConfigFactory.load();
+    println(conf.getString("pini.keizman"))
     val chatActor: Behavior[ChatCommand] = Chat()
     implicit val chatSystem: ActorSystem[ChatCommand] = ActorSystem(chatActor, "chat-app")
     val wsHandler: ActorSystem[Done] = WSServer(chatSystem)

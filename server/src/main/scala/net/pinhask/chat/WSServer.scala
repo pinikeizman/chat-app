@@ -29,52 +29,55 @@ object WSServer {
 
       //#websocket-routing
       val route =
-        path("greeter" / Segment) { clientName =>
-          get {
-            val (down: ActorRef, publisher: Publisher[TextMessage]) = Source
-              .actorRef[TextMessage](1000, OverflowStrategy.fail)
-              .alsoTo(Sink.onComplete {
-                case Success(a) =>
-                  ctx.log.info(s"Completed successfully ${a}")
-                case Failure(ex) =>
-                  ctx.log.error(s"Completed with failure : $ex")
-              })
-              .toMat(Sink.asPublisher(fanout = false))(Keep.both)
-              .run()
-            val wsClient = ctx.spawn(WSClient(), s"WSClient_$clientName")
-            val clientSession = ctx.spawn(WSClientSession(down, wsClient), s"WSClientSession_$clientName")
-            val source: Source[TextMessage, NotUsed] =
-              Source
-                .fromPublisher(publisher)
-            chatSystem ! CreateUserSession(clientName, clientSession)
-            val greeterWebSocketService: Flow[Message, TextMessage, NotUsed] =
-              Flow[Message]
-                .mapConcat {
-                  case tm: TextMessage =>
-                    ctx.log.info(s"Got msg from socket $tm")
-                    //                    wsClient ! WSClient.MessageFromWSClient(s"$tm")
-                    tm.textStream.map(wsClient ! WSClient.MessageFromWSClient(_)).to(Sink.ignore).run()
-                    Nil
-                }
-                .merge(source)
-                .watchTermination() { (nu, done) =>
-                  done.onComplete {
-                    case Success(a) =>
-                      ctx.log.info(s"Completed successfully ${clientName}")
-                      ctx.stop(wsClient)
-                      ctx.stop(clientSession)
-                      untypedSystem.stop(down)
-                    case Failure(ex) =>
-                      ctx.log.error(s"Completed with failure  ${clientName} : $ex")
+        path("chat") {
+          parameters(Symbol("name")) { (name) =>
+              val (down: ActorRef, publisher: Publisher[TextMessage]) = Source
+                .actorRef[TextMessage](1000, OverflowStrategy.fail)
+                .alsoTo(Sink.onComplete {
+                  case Success(a) =>
+                    ctx.log.info(s"Completed successfully ${a}")
+                  case Failure(ex) =>
+                    ctx.log.error(s"Completed with failure : $ex")
+                })
+                .toMat(Sink.asPublisher(fanout = false))(Keep.both)
+                .run()
+              val wsClient = ctx.spawn(WSClient(), s"WSClient_$name")
+              val clientSession = ctx.spawn(WSClientSession(down, wsClient), s"WSClientSession_$name")
+              val source: Source[TextMessage, NotUsed] =
+                Source
+                  .fromPublisher(publisher)
+              chatSystem ! CreateUserSession(name, clientSession)
+              val greeterWebSocketService: Flow[Message, TextMessage, NotUsed] =
+                Flow[Message]
+                  .mapConcat {
+                    case tm: TextMessage =>
+                      ctx.log.info(s"Got msg from socket $tm")
+                      //                    wsClient ! WSClient.MessageFromWSClient(s"$tm")
+                      tm
+                        .textStream
+                        .map(wsClient ! WSClient.MessageFromWSClient(_))
+                        .to(Sink.ignore).run()
+                      Nil
                   }
-                  nu
-                }
-            handleWebSocketMessages(greeterWebSocketService)
+                  .merge(source)
+                  .watchTermination() { (nu, done) =>
+                    done.onComplete {
+                      case Success(a) =>
+                        ctx.log.info(s"Completed successfully ${name} $a")
+                        ctx.stop(wsClient)
+                        ctx.stop(clientSession)
+                        untypedSystem.stop(down)
+                      case Failure(ex) =>
+                        ctx.log.error(s"Completed with failure  ${name} : $ex")
+                    }
+                    nu
+                  }
+              handleWebSocketMessages(greeterWebSocketService)
           }
         }
       //#websocket-routing
 
-      val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+      val bindingFuture = Http().bindAndHandle(route, "0.0.0.0", 8080)
 
       println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
       untypedSystem
@@ -84,7 +87,7 @@ object WSServer {
         .map(println)
 
       Behaviors.same
-    }, "as")
+    }, "WSActorSystem")
     system
   }
 }

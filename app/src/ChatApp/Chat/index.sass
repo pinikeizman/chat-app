@@ -11,15 +11,22 @@
   &__conversation
     display: flex
     flex-direction: column
-    width: 100%
+    width: 90%
     height: 100%
     padding: 10px 15px
+    margin: 5px
     border-radius: $common-border-radius
     border: 1px solid #ddd
-
+    min-height: 200px
     &__messages
       height: 100%
-
+      overflow: auto
+      &__message
+        margin: 2px 0px
+        .from
+          color: darkgray
+        .text
+          padding-left: 5px
     &__submit-form
       display: flex
 

@@ -5,13 +5,13 @@ import Button from '../Button';
 import ErrorList from "../ErrorList";
 
 import {User, Errors} from "../../types";
-import {Dispatch, useEffect} from "react";
+import {Dispatch} from "react";
 import {SetStateAction} from "react";
 
 const INVALID_USER_ERROR_MSG: string = "Please enter a valid username";
 
 export interface LoginProps {
-    onLogin: (user: User, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+    onLogin: (user: User, event: React.MouseEvent | React.KeyboardEvent) => void
 }
 
 function createOnChangeHandler(
@@ -33,7 +33,7 @@ function createOnLoginHandler(
     onLogin: LoginProps["onLogin"],
     setErrors: Dispatch<SetStateAction<Errors>>
 ) {
-    return (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    return (event: React.MouseEvent | React.KeyboardEvent) => {
         if (!isValidUser(user)) {
             setErrors([INVALID_USER_ERROR_MSG])
         } else {
@@ -52,6 +52,7 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
         userName: ""
     });
     const [errors, setErrors] = React.useState<Errors>([]);
+    const onLoginHandler = createOnLoginHandler(user, onLogin, setErrors);
     return (
         <>
             <div className='app-login-container'>
@@ -59,14 +60,18 @@ const Login: React.FC<LoginProps> = (props: LoginProps) => {
                     placeholder='Type a nickname'
                     onChange={createOnChangeHandler(user, setUser, setErrors)}
                     error={errors.length > 0}
+                    onKeyPress={(event: React.KeyboardEvent) => {
+                        if (event.key === "Enter")
+                            onLoginHandler(event)
+                    }}
                 />
                 <Button
                     label='Login'
                     color={'submit'}
-                    onClick={createOnLoginHandler(user, onLogin, setErrors)}
+                    onClick={onLoginHandler}
                 />
                 {
-                    errors && <ErrorList errors={errors}/>
+                    errors.length > 0 && <ErrorList errors={errors}/>
                 }
             </div>
         </>

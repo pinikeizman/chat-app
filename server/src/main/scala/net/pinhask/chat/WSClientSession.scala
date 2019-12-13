@@ -20,7 +20,7 @@ object WSClientSession {
           Behaviors.stopped
         case MessagePosted(screenName, msg) =>
           context.log.info("message has been posted by '{}': {}", screenName, msg)
-          down ! TextMessage(s"From: $screenName, context: $msg")
+          down ! TextMessage(s"""{"from": "$screenName", "message": "$msg"}""")
           Behaviors.same
       }.receiveSignal {
         case (ctx, PostStop) =>

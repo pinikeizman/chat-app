@@ -4,7 +4,7 @@
   "description": "Chat application implementation using react hooks ",
   "main": "src/index.js",
   "scripts": {
-    "dev": "webpack-dev-server --hot",
+    "dev": "webpack-dev-server --hot --host 0.0.0.0",
     "bundle-dev": "webpack --mode development",
     "bundle": "webpack --mode production",
     "test": "mocha -r ts-node/register -r @babel/register -r mocha.js -r ignore-styles test/**/*.test.ts src/**/*.test.tsx",
